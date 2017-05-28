@@ -2,6 +2,11 @@
 
 CONFIG_FILE=/var/www/html/config/config.ini.php
 
+cat > /usr/local/etc/php-fpm.d/zz-allow-all-extensions.conf <<EOF
+[www]
+security.limit_extensions =
+EOF
+
 if [ ! -f $CONFIG_FILE ]; then
   echo "; <?php exit; ?> DO NOT REMOVE THIS LINE
 ; file automatically generated or modified by Piwik; you can manually override the default values in global.ini.php by redefining them in this file.

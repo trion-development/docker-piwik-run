@@ -22,8 +22,6 @@ services:
     image: piwik:fpm
     links:
       - db
-    ports:
-      - "9000:9000"
     depends_on:
       - db
     volumes:
