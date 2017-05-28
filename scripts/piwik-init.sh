@@ -1,16 +1,16 @@
 #!/bin/bash
 
-CONFIG_FILE=/usr/share/nginx/html/config/config.ini.php
+CONFIG_FILE=/var/www/html/config/config.ini.php
 
 if [ ! -f $CONFIG_FILE ]; then
   echo "; <?php exit; ?> DO NOT REMOVE THIS LINE
 ; file automatically generated or modified by Piwik; you can manually override the default values in global.ini.php by redefining them in this file.
 [database]
-host =
+host = \"$DB_HOST\"
 port = 3306
-username =
-password =
-dbname = \"piwik\"
+username = \"$DB_USER\"
+password = \"$DB_PASSWORD\"
+dbname = \"$DB_DATABASE\"
 tables_prefix = \"piwik_\"
 adapter = \"PDO\MYSQL\"
 type = \"InnoDB\"
@@ -65,47 +65,5 @@ echo "Done setting up piwik config..."
 cat $CONFIG_FILE
 chown www-data:www-data $CONFIG_FILE
 
-if [ ! -z $PIWIK_SEED_DATABASE ]; then
-  mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST \
-        --port=$DB_PORT -D $DB_NAME < /usr/share/nginx/html/config/base-schema.sql
-  SITE_SQL=$(cat <<EOF
-        INSERT INTO \`piwik_site\`
-        VALUES (1,
-                'Example Piwik Site',
-                'http://www.example.com',
-                '2014-11-01 12:00:00',
-                0,
-                1,
-                '',
-                '',
-                'UTC',
-                'USD',
-                '',
-                '',
-                '',
-                '',
-                'website',
-                0);
-EOF
-)
-  echo $SITE_SQL | mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST \
-        --port=$DB_PORT -D $DB_NAME
-fi
-
-if [ ! -z $PIWIK_USER ] && [ ! -z $PIWIK_PASSWORD ]; then
-  HASHED_PW=$(php -r 'print(md5("'"${PIWIK_PASSWORD}"'"));')
-  USER_SQL=$(cat <<EOF
-        INSERT INTO \`piwik_user\`
-        VALUES ('$PIWIK_USER',
-                '$HASHED_PW',
-                '$PIWIK_USER',
-                '${PIWIK_USER}@example.com',
-                '$HASHED_PW',
-                1,
-                '2014-11-01 12:00:00');
-EOF
-)
-  echo $USER_SQL;
-  echo $USER_SQL | mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST \
-        --port=$DB_PORT -D $DB_NAME
-fi
+echo "Waiting for mysql..."
+sleep 20

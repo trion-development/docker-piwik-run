@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   db:
     image: mysql
@@ -7,25 +7,40 @@ services:
       - MYSQL_DATABASE=piwik
       - MYSQL_USER=piwik
       - MYSQL_PASSWORD=password
+    ports:
+      - "3306:3306"
     volumes:
       - ./database:/var/lib/mysql
-
+      - ./resources/piwik-init.sql:/docker-entrypoint-initdb.d/0-init.sql
+      - ./resources/piwik-user.sql:/docker-entrypoint-initdb.d/0-user.sql
   piwik:
+    environment:
+      - DB_DATABASE=piwik
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=piwik
+      - DB_PASSWORD=password
     image: piwik:fpm
-  links:
+    links:
       - db
     ports:
-      - 9000:9000
+      - "9000:9000"
+    depends_on:
+      - db
     volumes:
-      - ./config:/var/www/html/config:rw
+      #- ./config:/var/www/html/config:rw
       - ./scripts:/scripts:ro
-    command: /scripts/piwik-init.sh
-
+    command: php-fpm
+    entrypoint: /scripts/piwik-entrypoint.sh
   web:
     image: nginx:alpine
+    links:
+      - piwik
+    depends_on:
+      - piwik
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
-    volumes_from:
-      - piwik
     environment:
       - VIRTUAL_HOST
+    ports:
+      - "9001:80"
