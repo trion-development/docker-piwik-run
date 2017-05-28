@@ -1,4 +1,4 @@
-Simple docker-compose setup to run piwik locally for development.
+Simple docker-compose setup to run piwik locally for development without the need to run additional setup or configuration steps in the browser.
 
 Usage
 
@@ -7,7 +7,7 @@ Usage
 
 Access via browser:
 
-http://localhost:9001/
+[http://localhost:9001/index.php]
 
 Login with "admin"/"admin"
 
