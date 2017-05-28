@@ -67,3 +67,9 @@ chown www-data:www-data $CONFIG_FILE
 
 echo "Waiting for mysql..."
 sleep 20
+
+echo "Upgrading schema..."
+php console core:update --yes
+
+echo "Fixing permissions..."
+chown -R www-data:www-data /var/www/html
