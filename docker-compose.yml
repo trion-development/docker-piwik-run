@@ -25,7 +25,6 @@ services:
     depends_on:
       - db
     volumes:
-      #- ./config:/var/www/html/config:rw
       - ./scripts:/scripts:ro
     command: php-fpm
     entrypoint: /scripts/piwik-entrypoint.sh
